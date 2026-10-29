@@ -18,6 +18,21 @@ void main() {
       );
     });
 
+    test('combines adjacent Text nodes at top level and inside elements', () {
+      final document = Document();
+      final result = document.parseInline('a [b] *c [d] e* f [g]');
+      expect(result, hasLength(3));
+      expect(result[0], isA<Text>().having((e) => e.text, 'text', 'a [b] '));
+      final em = result[1] as Element;
+      expect(em.tag, 'em');
+      expect(em.children, hasLength(1));
+      expect(
+        em.children!.single,
+        isA<Text>().having((e) => e.text, 'text', 'c [d] e'),
+      );
+      expect(result[2], isA<Text>().having((e) => e.text, 'text', ' f [g]'));
+    });
+
     group('with encodeHtml enabled', () {
       final document = Document();
 

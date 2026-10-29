@@ -39,6 +39,9 @@
   inside an indented code block.
 * `tablePattern` no longer backtracks exponentially on table delimiter rows
   containing many spaces.
+* Adjacent `Text` nodes are merged with a single in-place pass instead of
+  repeated `List.removeRange` calls, and merging now also covers the last child
+  of an element.
 
 ## 7.4.0
 
