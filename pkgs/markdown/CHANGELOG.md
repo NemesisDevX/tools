@@ -39,6 +39,8 @@
   inside an indented code block.
 * `tablePattern` no longer backtracks exponentially on table delimiter rows
   containing many spaces.
+* `AutolinkExtensionSyntax` checks for a URL prefix and a valid preceding
+  character before running the autolink regular expression.
 
 ## 7.4.0
 
