@@ -39,6 +39,11 @@
   inside an indented code block.
 * `tablePattern` no longer backtracks exponentially on table delimiter rows
   containing many spaces.
+* Reference link labels over 999 characters are no longer parsed, inline and
+  container block nesting depths are capped, and unclosed link destinations,
+  link titles, inline HTML tags, autolinks, code spans, extended autolink
+  domains, delimiter runs, and ATX headings are parsed in linear time without
+  overflowing the call stack.
 
 ## 7.4.0
 
