@@ -70,6 +70,7 @@ class InlineParser {
 
   HtmlClosers? _htmlClosers;
   Map<int, int>? _lastBacktickRun;
+  int _failedDomainEnd = -1;
 
   InlineParser(this.source, this.document) {
     // User specified syntaxes are the first syntaxes to be evaluated.
@@ -479,6 +480,9 @@ extension InlineParserScanState on InlineParser {
 
   Map<int, int> get lastBacktickRun =>
       _lastBacktickRun ??= _scanBackticks(source);
+
+  int get failedDomainEnd => _failedDomainEnd;
+  set failedDomainEnd(int value) => _failedDomainEnd = value;
 
   static Map<int, int> _scanBackticks(String source) {
     final result = <int, int>{};

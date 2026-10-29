@@ -50,6 +50,11 @@ class AutolinkExtensionSyntax extends InlineSyntax {
     caseSensitive: false,
   );
 
+  static final _domainRun = RegExp(
+    r'[-_a-z0-9]+(?:\.[-_a-z0-9]+)*',
+    caseSensitive: false,
+  );
+
   static final _emailOnly = RegExp(
     _emailPattern,
     multiLine: true,
@@ -68,15 +73,22 @@ class AutolinkExtensionSyntax extends InlineSyntax {
         validPrecedingChars.contains(
           String.fromCharCode(parser.charAt(startMatchPos - 1)),
         );
+    final domainStart = validLinkStart
+        ? _linkPrefix.matchAsPrefix(parser.source, startMatchPos)?.end
+        : null;
     final linkCanMatch =
-        validLinkStart &&
-        _linkPrefix.matchAsPrefix(parser.source, startMatchPos) != null;
+        domainStart != null && domainStart >= parser.failedDomainEnd;
 
     final startMatch = (linkCanMatch ? pattern : _emailOnly).matchAsPrefix(
       parser.source,
       startMatchPos,
     );
     if (startMatch == null) {
+      if (linkCanMatch) {
+        parser.failedDomainEnd =
+            _domainRun.matchAsPrefix(parser.source, domainStart)?.end ??
+            domainStart;
+      }
       return false;
     }
 
