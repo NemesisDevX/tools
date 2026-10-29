@@ -39,6 +39,8 @@
   inside an indented code block.
 * `tablePattern` no longer backtracks exponentially on table delimiter rows
   containing many spaces.
+* Footnote references look up definitions and label ordinals in O(1) instead
+  of scanning all footnote definitions and labels for every reference.
 
 ## 7.4.0
 
