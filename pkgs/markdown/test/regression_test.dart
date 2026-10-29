@@ -337,6 +337,10 @@ a <!--
     expect(markdownToHtml('${'*a **a ' * 100}b${' a** a*' * 100}'), isNotEmpty);
     expect(markdownToHtml('${'**' * 200}a${'**' * 200}'), isNotEmpty);
   });
+
+  test('container block nesting depth is capped at 100', () {
+    expect(markdownToHtml('${'> ' * 101}a'), isNotEmpty);
+  });
 }
 
 class _CountingLine extends Line {
