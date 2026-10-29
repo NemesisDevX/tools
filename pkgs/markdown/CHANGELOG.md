@@ -39,6 +39,8 @@
   inside an indented code block.
 * `tablePattern` no longer backtracks exponentially on table delimiter rows
   containing many spaces.
+* The plain-text accelerator syntax in `InlineParser` no longer rescans a run of
+  word characters at every position after failing to match at its start.
 
 ## 7.4.0
 
