@@ -23,6 +23,8 @@ class Document {
   /// They are case-insensitive and added by ref syntax.
   final footnoteLabels = <String>[];
 
+  int _containerBlockNesting = 0;
+
   final LinkBuilder? linkBuilder;
   final LinkBuilder? imageLinkBuilder;
   final bool encodeHtml;
@@ -232,4 +234,9 @@ class LinkReference {
   /// If the parsed link reference definition does not include a title, use
   /// `null` for the [title] parameter.
   LinkReference(this.label, this.destination, this.title);
+}
+
+extension DocumentContainerNesting on Document {
+  int get containerBlockNesting => _containerBlockNesting;
+  set containerBlockNesting(int value) => _containerBlockNesting = value;
 }

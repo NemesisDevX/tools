@@ -39,6 +39,9 @@
   inside an indented code block.
 * `tablePattern` no longer backtracks exponentially on table delimiter rows
   containing many spaces.
+* Container blocks (block quotes, lists, alerts, footnote definitions) nest at
+  most 100 levels deep; deeper markers are parsed as text instead of overflowing
+  the call stack.
 
 ## 7.4.0
 
