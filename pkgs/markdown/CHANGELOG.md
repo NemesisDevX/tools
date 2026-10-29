@@ -39,6 +39,8 @@
   inside an indented code block.
 * `tablePattern` no longer backtracks exponentially on table delimiter rows
   containing many spaces.
+* `LineBreakSyntax` no longer rescans a run of spaces at every position after
+  failing to match a hard line break at its start.
 
 ## 7.4.0
 
