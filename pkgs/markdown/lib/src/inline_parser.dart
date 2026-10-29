@@ -169,6 +169,7 @@ class InlineParser {
     final syntax = delimiter.syntax;
     if (syntax is LinkSyntax && syntaxes.any((e) => e is LinkSyntax)) {
       final delimiterTreeNode = bracketNode.treeNode!;
+      var maxChildDepth = 0;
       final linkNodes = syntax.close(
         this,
         delimiter,
@@ -179,8 +180,10 @@ class InlineParser {
           // link/image.
           final children = <Node>[];
           while (delimiterTreeNode.next != null) {
-            children.add(delimiterTreeNode.next!.node);
-            delimiterTreeNode.next!.unlink();
+            final child = delimiterTreeNode.next!;
+            if (child.depth > maxChildDepth) maxChildDepth = child.depth;
+            children.add(child.node);
+            child.unlink();
           }
           return children;
         },
@@ -205,7 +208,7 @@ class InlineParser {
         }
         delimiterTreeNode.unlink();
         for (final node in linkNodes) {
-          _tree.add(_TreeNode(node));
+          _tree.add(_TreeNode(node, maxChildDepth + 1));
         }
         advanceBy(1);
         start = pos;
@@ -232,6 +235,10 @@ class InlineParser {
       return true;
     }
   }
+
+  /// Maximum nesting depth of inline elements created by
+  /// [_processDelimiterRun].
+  static const _maxInlineNesting = 128;
 
   /// Processes [DelimiterRun] type delimiters from [bottom] and up.
   ///
@@ -286,6 +293,7 @@ class InlineParser {
         final openerTreeNode = openerNode.treeNode!;
         final closerTextNode = closer.node;
         final closerTreeNode = current.treeNode!;
+        var maxChildDepth = 0;
         final nodes = opener.syntax.close(
           this,
           opener,
@@ -298,6 +306,7 @@ class InlineParser {
               t != null && t != closerTreeNode;
               t = t.next
             ) {
+              if (t.depth > maxChildDepth) maxChildDepth = t.depth;
               children.add(t.node);
             }
             return children;
@@ -308,10 +317,16 @@ class InlineParser {
         while (openerTreeNode.next != closerTreeNode) {
           openerTreeNode.next!.unlink();
         }
+        final depth = maxChildDepth + 1;
         for (final node in nodes!) {
-          closerTreeNode.insertBefore(_TreeNode(node));
+          closerTreeNode.insertBefore(_TreeNode(node, depth));
         }
 
+        if (depth >= _maxInlineNesting) {
+          while (openerNode.previous != bottom) {
+            openerNode.previous!.unlink();
+          }
+        }
         while (openerNode.next != current) {
           openerNode.next!.unlink();
         }
@@ -327,6 +342,9 @@ class InlineParser {
           );
           openerTreeNode.node = newOpenerTextNode;
           opener.node = newOpenerTextNode;
+          if (depth >= _maxInlineNesting) {
+            openerNode.unlink();
+          }
         }
 
         if (closer.length == indicatorLength) {
@@ -431,8 +449,9 @@ class InlineParser {
 
 final class _TreeNode extends LinkedListEntry<_TreeNode> {
   Node node;
+  final int depth;
 
-  _TreeNode(this.node);
+  _TreeNode(this.node, [this.depth = 0]);
 }
 
 final class _DelimiterNode extends LinkedListEntry<_DelimiterNode> {

@@ -332,6 +332,11 @@ a <!--
     );
     expect(markdownToHtml('[a]($parens33)'), '<p>[a]($parens33)</p>\n');
   });
+
+  test('inline nesting depth is capped at 128', () {
+    expect(markdownToHtml('${'*a **a ' * 100}b${' a** a*' * 100}'), isNotEmpty);
+    expect(markdownToHtml('${'**' * 200}a${'**' * 200}'), isNotEmpty);
+  });
 }
 
 class _CountingLine extends Line {
